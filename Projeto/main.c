@@ -40,18 +40,22 @@ void	print_content(s_port *porto)
 	int	ind = 1;
 	int	jnd = 0;
 	int	gnd = 0;
-
-	printf ("N_porto:%d Nome:%s Pilha:%d\n", porto->_emb[ind].n_porto, porto->_emb[ind].nome, jnd);
-	while (jnd < 4)
+	while (ind < 6)
 	{
-		gnd = 0;
-		printf("Peso_total:%d, N_contentores:%d\n", porto->_emb[ind].pilha[jnd].peso_total, porto->_emb[ind].pilha[jnd].contentores);
-		while (gnd < porto->_emb[ind].pilha[jnd].contentores)
+		jnd = 0;
+		printf ("\n\nN_porto:%d Nome:%s Pilha:%d\n", porto->_emb[ind].n_porto, porto->_emb[ind].nome, jnd);
+		while (jnd < 4)
 		{
-			printf("Id:%d, peso:%d, personal_id:%s\n", porto->_emb[ind].pilha[jnd].cont[gnd].pilha_id, porto->_emb[ind].pilha[jnd].cont[gnd].peso,porto->_emb[ind].pilha[jnd].cont[gnd].p_id);
-			gnd++;
+			gnd = 0;
+			printf("Peso_total:%d, N_contentores:%d\n", porto->_emb[ind].pilha[jnd].peso_total, porto->_emb[ind].pilha[jnd].contentores);
+			while (gnd < porto->_emb[ind].pilha[jnd].contentores)
+			{
+				printf("Id:%d, peso:%d, personal_id:%s\n", porto->_emb[ind].pilha[jnd].cont[gnd].pilha_id, porto->_emb[ind].pilha[jnd].cont[gnd].peso,porto->_emb[ind].pilha[jnd].cont[gnd].p_id);
+				gnd++;
+			}
+			jnd++;
 		}
-		jnd++;
+		ind++;
 	}
 }
 
@@ -172,21 +176,25 @@ void	name_ship(s_port *porto, int index, char *start_of_name)
 {
 	porto->_emb[index].nome = malloc (sizeof(char) * 5);
 	strncpy(porto->_emb[index].nome, start_of_name, 4);
+	porto->_emb[index].nome[4] = '\0';
 }
 
-void	set_ship(s_port *porto, char *ocurrence, int *buffer) //mete o nome e numero do barco na respetiva estrutura embarcacao
+int	set_ship(s_port *porto, char *ocurrence, int *buffer) //mete o nome e numero do barco na respetiva estrutura embarcacao
 {
 	int		index = 0;
 
 	while (ocurrence[index] != *ocurrence && ocurrence[index])
 		index++;
 	*buffer = ocurrence[index + 1] - 48; // 48 = 0 em decimal (por isso verifica qual e o numero a partir de 0)
+	if (porto->postos[*buffer] == 1)
+	{
+		printf("ERROR:Dois ou mais navious no mesmo espaco do porto:%d\n", *buffer);
+		return (1);
+	}
 	porto->postos[*buffer] = 1;
 	ocurrence += 3;
-	printf("%d\n", *buffer);
-	porto->_emb[index].n_porto = *buffer;
-	printf("%d\n", porto->_emb[index].n_porto);
 	name_ship(porto, *buffer, ocurrence);
+	return (0);
 }
 
 int	create_contentor(s_port *porto, int buffer, int n_pilha)
@@ -289,7 +297,9 @@ int	parsing(s_port *porto, int fd)
 			;
 		else
 		{
-			set_ship(porto, ocurrence, &buffer);
+			if (set_ship(porto, ocurrence, &buffer) == 1)
+				return (1);
+			porto->_emb[buffer].n_porto = buffer;
 			while (line && line[0] != '\n')
 			{
 				line = get_next_line(fd);
@@ -310,7 +320,13 @@ int	parsing(s_port *porto, int fd)
 int	init_program_with_file(s_port *porto, char *av1) //vai ler o ficheiro de configuracao
 {
 	int	fd;
+	int	ind = 0;
 
+	while (ind <= 9)
+	{
+		porto->postos[ind] = 0;
+		ind++;
+	}
 	fd = open(av1, O_RDONLY);
 	if (parsing(porto, fd) == 1)
 		return (1);
@@ -321,7 +337,7 @@ int	init_program_without_file(s_port *porto) //marca todos os postos como vazios
 {
 	int	ind = 0;
 
-	while (ind < 9)
+	while (ind <= 9)
 	{
 		porto->postos[ind] = 0;
 		ind++;
