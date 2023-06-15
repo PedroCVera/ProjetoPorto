@@ -319,16 +319,34 @@ int	parsing(s_port *porto, int fd)
 	return (0);
 }
 
-int	init_program_with_file(s_port *porto, char *av1) //vai ler o ficheiro de configuracao
+void	starting(s_port *porto)
 {
-	int	fd;
 	int	ind = 0;
+	int	jnd = 0;
 
 	while (ind <= 9)
 	{
 		porto->postos[ind] = 0;
 		ind++;
 	}
+	ind = 0;
+	while (ind <= 9)
+	{
+		jnd = 0;
+		while (jnd <= 5)
+		{
+			porto->_emb[ind].pilha[jnd].peso_total = 0;
+			jnd++;
+		}
+		ind++;
+	}
+}
+
+int	init_program_with_file(s_port *porto, char *av1) //vai ler o ficheiro de configuracao
+{
+	int	fd;
+
+	starting(porto);
 	fd = open(av1, O_RDONLY);
 	if (parsing(porto, fd) == 1)
 		return (1);
@@ -336,16 +354,39 @@ int	init_program_with_file(s_port *porto, char *av1) //vai ler o ficheiro de con
 	return (0);
 }
 
-int	init_program_without_file(s_port *porto) //marca todos os postos como vazios
+int	weighting(s_port *porto, int ind)
+{
+	int	weight = 0;
+	int	jnd = 0;
+
+	while (jnd <= 5)
+	{
+		weight += porto->_emb[ind].pilha[jnd].peso_total;
+		jnd++;
+	}
+	return (weight);
+}
+
+int	show_weight(s_port *porto, char *name)
 {
 	int	ind = 0;
-
+	
 	while (ind <= 9)
 	{
-		porto->postos[ind] = 0;
+		if (porto->_emb[ind].nome)
+		{
+			if (strcmp(porto->_emb[ind].nome, name) != 0)
+				;
+			else
+			{
+				
+				printf("%s %d\n", name, weighting(porto, ind));
+				return (0);
+			}
+		}
 		ind++;
 	}
-	return (0);
+	return (1);
 }
 
 int	actual_program(s_port *porto)
@@ -353,7 +394,10 @@ int	actual_program(s_port *porto)
 	// char	*prompt;
 
 	printf("+---- MENU\n| move        [-g grua] [-d ponto] [-p pilha] [-D ponto] [-P pilha] [-n numero_de_contentores]\n| show        [-d ponto] [-e embarc]\n| where        [embarc]\n| navigate    [-e embarc] [-d ponto]\n| load        [-e embarc] [-p pilha] [-c contentor:peso]\n| weight    [embarc]\n| save        [filename]\n| help\n| quit\n+----\n");
-	return (porto->postos[1]);
+	
+	if (show_weight(porto, "DANI") == 1)
+		return (1);
+	return (0);
 }
 
 /* 4 entries: demasiados args, args certos com ficheiro (+ficheiro pode tar mal), args certos sem ficheiro*/
@@ -362,6 +406,7 @@ int	main(int argc, char *argv[])
 {
 	s_port	porto;
 
+	argv[1] = "config.txt";
 	if (argc > 2) //demasiados argumentos
 	{
 		printf("Foram introduzidos demasiados argumentos\n");
@@ -380,7 +425,7 @@ int	main(int argc, char *argv[])
 	}
 	else //sem ficheiro
 	{
-		init_program_without_file(&porto);
+		starting(&porto);;
 		return (1);
 	}
 	if (actual_program(&porto) == 1)
