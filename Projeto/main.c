@@ -591,20 +591,20 @@ int	show(s_port *porto, char *prompt)
 // 	add_contentor(porto, pos, pilha, contentor);
 // }
 
-void	navigate(s_port *porto, char *prompt)
-{
-	int	ind = 8;
+// void	navigate(s_port *porto, char *prompt)
+// {
+// 	int	ind = 8;
 
-	while(prompt[ind] != 'e' && prompt[ind] != '\0')
-		ind++;
-	if (prompt[ind] == '\0')
-	{
-		printf("ERROR:invalid command\n");
-		return ;
-	}
-	while ((prompt[ind] >= 'Z' || prompt[ind] <= 'A') && prompt[ind] != '\0')
+// 	while(prompt[ind] != 'e' && prompt[ind] != '\0')
+// 		ind++;
+// 	if (prompt[ind] == '\0')
+// 	{
+// 		printf("ERROR:invalid command\n");
+// 		return ;
+// 	}
+// 	while ((prompt[ind] >= 'Z' || prompt[ind] <= 'A') && prompt[ind] != '\0')
 
-}
+// }
 
 int	actual_program(s_port *porto)
 {
