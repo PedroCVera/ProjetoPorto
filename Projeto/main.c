@@ -214,8 +214,6 @@ int	create_contentor(s_port *porto, int buffer, int n_pilha)
 	return (0);
 }
 
-
-
 int	set_piles(s_port *porto, char *ocurrence, int buffer)	//occurence e a linha que estamos a ler e aponta para o P
 {
 	int		index = 0;
@@ -367,13 +365,21 @@ int	weighting(s_port *porto, int ind)
 	return (weight);
 }
 
-int	show_weight(s_port *porto, char *name)
+int	show_weight(s_port *porto, char *prompt)
 {
-	int	ind = 0;
-	
+	int		ind = 0;
+	int		jnd = 6;
+	char	*name;
+
+	while (prompt[jnd + 1] && (prompt[jnd] <='A' || prompt[jnd] >= 'Z'))
+		jnd++;
+	name = calloc (sizeof(char), 5);
+	while (ind < 4)
+		name[ind++] = prompt[jnd++];
+	ind = 0;
 	while (ind <= 9)
 	{
-		if (porto->_emb[ind].nome)
+		if (porto->postos[ind] == 1)
 		{
 			if (strcmp(porto->_emb[ind].nome, name) != 0)
 				;
@@ -386,18 +392,25 @@ int	show_weight(s_port *porto, char *name)
 		}
 		ind++;
 	}
+	printf("ERROR:Nao existe uma embarcacao com esse nome\n");
 	return (1);
 }
 
 int	actual_program(s_port *porto)
 {
-	// char	*prompt;
+	char	*prompt;
+	int		len = 0;
 
+	prompt = calloc(sizeof(char), 50);
 	printf("+---- MENU\n| move        [-g grua] [-d ponto] [-p pilha] [-D ponto] [-P pilha] [-n numero_de_contentores]\n| show        [-d ponto] [-e embarc]\n| where        [embarc]\n| navigate    [-e embarc] [-d ponto]\n| load        [-e embarc] [-p pilha] [-c contentor:peso]\n| weight    [embarc]\n| save        [filename]\n| help\n| quit\n+----\n");
-	
-	if (show_weight(porto, "DANI") == 1)
-		return (1);
-	return (0);
+	printf(">");
+	fgets(prompt, 50, stdin);
+	len = strlen(prompt);
+	if (len > 0 && prompt[len - 1] == '\n')
+		prompt[--len] = '\0';
+	if (strncmp(prompt, "weight", 6) == 0)
+		show_weight(porto, prompt);
+	return (1);
 }
 
 /* 4 entries: demasiados args, args certos com ficheiro (+ficheiro pode tar mal), args certos sem ficheiro*/
