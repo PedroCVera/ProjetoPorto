@@ -303,6 +303,8 @@ int	parsing(s_port *porto, int fd)
 			while (line && line[0] != '\n')
 			{
 				line = get_next_line(fd);
+				if (!line)
+					break ;
 				ocurrence = strchr(line, 'p');
 				if(ocurrence == NULL)
 					break ;
@@ -330,6 +332,7 @@ int	init_program_with_file(s_port *porto, char *av1) //vai ler o ficheiro de con
 	fd = open(av1, O_RDONLY);
 	if (parsing(porto, fd) == 1)
 		return (1);
+	close (fd);
 	return (0);
 }
 
@@ -345,10 +348,20 @@ int	init_program_without_file(s_port *porto) //marca todos os postos como vazios
 	return (0);
 }
 
+int	actual_program(s_port *porto)
+{
+	// char	*prompt;
+
+	printf("+---- MENU\n| move        [-g grua] [-d ponto] [-p pilha] [-D ponto] [-P pilha] [-n numero_de_contentores]\n| show        [-d ponto] [-e embarc]\n| where        [embarc]\n| navigate    [-e embarc] [-d ponto]\n| load        [-e embarc] [-p pilha] [-c contentor:peso]\n| weight    [embarc]\n| save        [filename]\n| help\n| quit\n+----\n");
+	return (porto->postos[1]);
+}
+
 /* 4 entries: demasiados args, args certos com ficheiro (+ficheiro pode tar mal), args certos sem ficheiro*/
 
 int	main(int argc, char *argv[])
 {
+	s_port	porto;
+
 	if (argc > 2) //demasiados argumentos
 	{
 		printf("Foram introduzidos demasiados argumentos\n");
@@ -361,15 +374,21 @@ int	main(int argc, char *argv[])
 			printf("ERROR: file format is not recognized\n");
 			return (1);
 		}
-		s_port	porto;
 		if (init_program_with_file(&porto, argv[1]) == 1)
 			return (1);
-		print_content(&porto);
+		// print_content(&porto);
 	}
 	else //sem ficheiro
 	{
-		s_port	porto;
 		init_program_without_file(&porto);
-			return (1);
+		return (1);
 	}
+	if (actual_program(&porto) == 1)
+	{
+		// free_all;
+		return (1);
+	}
+	else
+		//free_all(porto);
+	return (0);
 }
