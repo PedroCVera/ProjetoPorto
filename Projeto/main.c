@@ -742,7 +742,7 @@ void	create_barco(s_port *porto, int dest, char *prompt)
 		name[jnd++] = prompt[ind++];
 	if (prompt[ind] != '\0')
 	{
-		if ((prompt[ind] <= 'Z' && prompt[ind] >= 'A') || (name[ind] <= 'z' && name[ind] >= 'a'))
+		if ((prompt[ind] <= 'Z' && prompt[ind] >= 'A') || (prompt[ind] <= 'z' && prompt[ind] >= 'a'))
 		{
 			printf("ERROR:invalid command\n");
 			return ;
