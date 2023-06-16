@@ -689,6 +689,15 @@ void	create_barco(s_port *porto, int dest, char *prompt)
 	while (jnd < 4 && prompt[ind] != '\0')
 		name[jnd++] = prompt[ind++];
 	name[4] = '\0';
+	jnd = 0;
+	while (name[jnd++] != '\0')
+	{
+		if (name[jnd] <= 'z' && name[jnd] >= 'a')
+		{
+		printf("ERROR:invalid command\n");
+		return ;
+		}
+	}
 	porto->postos[dest] = 1;
 	porto->_emb[dest].nome = strdup(name);
 	printf("SUCCESS: operation concluded\n");
