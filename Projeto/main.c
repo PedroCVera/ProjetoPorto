@@ -650,6 +650,11 @@ void	load(s_port *porto, char *prompt)
 		return ;
 	}
 	pilha = prompt[ind] - '0';
+	if (pilha > 5)
+	{
+		printf("ERROR:invalid command\n");
+		return ;
+	}
 	ind = 4;
 	while (prompt[ind] != '\0' && prompt[ind] != 'c')
 		ind++;
@@ -725,6 +730,11 @@ void	navigate(s_port *porto, char *prompt)
 	while (prompt[ind] != '\0' && (prompt[ind] > '9' || prompt[ind] < '0'))
 		ind++;
 	if (prompt[ind] == '\0')
+	{
+		printf("ERROR:invalid command\n");
+		return ;
+	}
+	if (prompt[ind + 1] <= '9' && prompt[ind + 1] >= '0')
 	{
 		printf("ERROR:invalid command\n");
 		return ;
