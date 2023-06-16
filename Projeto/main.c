@@ -515,82 +515,86 @@ int	show(s_port *porto, char *prompt)
 	return (1);
 }
 
-// void	add_contentor(s_port *porto, int pos, int pilha, char *brutocontentor)
-// {
-// 	int		jndex = porto->_emb[pos].pilha[pilha].contentores;
-// 	char	*contentor;
-// 	char	buff[15];
-// 	int		n_contentor = 0;
-// 	int		jnd = 0;
-// 	s_cont	*contentores;
+void	add_contentor(s_port *porto, int pos, int pilha, char *brutocontentor)
+{
+	int		jndex = porto->_emb[pos].pilha[pilha].contentores;
+	char	*contentor;
+	char	buff[15];
+	int		n_contentor = 0;
+	int		jnd = 0;
 
-// 	jndex++;
-// 	while (brutocontentor[n_contentor] != ':' && brutocontentor[n_contentor] != '\0')
-// 		n_contentor++;
-// 	n_contentor++;
-// 	while (brutocontentor[n_contentor] != '\0')
-// 		buff[jnd++] = brutocontentor[n_contentor++];
-// 	buff[jnd] = '\0';
-// 	if (jnd < 3)
-// 	{
-// 		printf("ERROR:invalid command\n");
-// 		return ;
-// 	}
-// 	n_contentor = atoi(buff);
-// 	contentor = strndup(brutocontentor, 3);
-// 	jnd = 0;
-// 	if (porto->_emb[pos].pilha[pilha].contentores == 0)
-// 	{
-// 		porto->_emb[pos].pilha[pilha].cont  = calloc(sizeof(s_cont), 1);
-// 	}
-// 	printf("CONTENTOR:%s contentor:%s, N:%d\n", contentor, buff, n_contentor);
-// }
+	jndex++;
+	while (brutocontentor[n_contentor] != ':' && brutocontentor[n_contentor] != '\0')
+		n_contentor++;
+	n_contentor++;
+	while (brutocontentor[n_contentor] != '\0')
+		buff[jnd++] = brutocontentor[n_contentor++];
+	buff[jnd] = '\0';
+	if (jnd < 3)
+	{
+		printf("ERROR:invalid command\n");
+		return ;
+	}
+	n_contentor = atoi(buff);
+	contentor = strndup(brutocontentor, 3);
+	jnd = 0;
+	if (porto->_emb[pos].pilha[pilha].contentores == 0)
+	{
+	// 	porto->_emb[pos].pilha[pilha].cont  = calloc(sizeof(s_cont), 1);
+		porto->_emb[pos].pilha[pilha].contentores = 1;
+		porto->_emb[pos].pilha[pilha].cont->pilha_id = pilha;
+		porto->_emb[pos].pilha[pilha].cont->peso = n_contentor;
+		porto->_emb[pos].pilha[pilha].cont->p_id = strdup(contentor);
+	}
+	else
+	printf("boatarde\n");
+	printf("OLA%s\n", porto->_emb[pos].pilha[pilha].cont->p_id);
+	printf("sebas\n");
+	printf("CONTENTOR:%s   N:%d\n", porto->_emb[pos].pilha[pilha].cont->p_id , porto->_emb[pos].pilha[pilha].cont->peso);
+	porto->_emb[pos].pilha[pilha].peso_total += n_contentor;
+	porto->_emb[pos].pilha[pilha].contentores += 1;
+}
 
-// void	load(s_port *porto, char *prompt)
-// {
-// 	int 	ind = 4;
-// 	int		pos;
-// 	int		pilha;
-// 	char	contentor[15];
-// 	int		jnd = 0;
+void	load(s_port *porto, char *prompt)
+{
+	int 	ind = 4;
+	int		pos;
+	int		pilha;
+	char	contentor[15];
+	int		jnd = 0;
 
-// 	while (prompt[ind] != '\0' && prompt[ind] != 'e')
-// 		ind++;
-// 	pos = where_is_it(porto, prompt, 0, ind);
-// 	if (pos == -1)
-// 		return ;
-// 	ind = 4;
-// 	while (prompt[ind] != '\0' && prompt[ind] != 'p')
-// 		ind++;
-// 	if (prompt[ind] == '\0')
-// 	{
-// 		printf("ERROR:invalid command\n");
-// 		return ;
-// 	}
-// 	while (prompt[ind] != '\0' && (prompt[ind] > '9' || prompt[ind] < '0'))
-// 		ind++;
-// 	if (prompt[ind] == '\0')
-// 	{
-// 		printf("ERROR:invalid command\n");
-// 		return ;
-// 	}
-// 	pilha = prompt[ind] - '0';
-// 	ind = 4;
-// 	while (prompt[ind] != '\0' && prompt[ind] != 'c')
-// 		ind++;
-// 	while (prompt[ind] != '\0' && (prompt[ind] > 'Z' || prompt[ind] < 'A'))
-// 		ind++;
-// 	if (prompt[ind] == '\0')
-// 	{
-// 		printf("ERROR:invalid command\n");
-// 		return ;
-// 	}
-// 	while (prompt[ind] != '\0' && prompt[ind] != ' ')
-// 		contentor[jnd++] = prompt[ind++];
-// 	contentor[jnd] = '\0';
-// 	printf("Embarcacao:%s, Pilha:%d, contentor:%s\n",porto->_emb[pos].nome, pilha, contentor);
-// 	add_contentor(porto, pos, pilha, contentor);
-// }
+	while (prompt[ind] != '\0' && prompt[ind] != 'e')
+		ind++;
+	pos = where_is_it(porto, prompt, 0, ind);
+	if (pos == -1)
+		return ;
+	ind = 4;
+	while (prompt[ind] != '\0' && prompt[ind] != 'p')
+		ind++;
+	while (prompt[ind] != '\0' && (prompt[ind] > '9' || prompt[ind] < '0'))
+		ind++;
+	if (prompt[ind] == '\0')
+	{
+		printf("ERROR:invalid command\n");
+		return ;
+	}
+	pilha = prompt[ind] - '0';
+	ind = 4;
+	while (prompt[ind] != '\0' && prompt[ind] != 'c')
+		ind++;
+	while (prompt[ind] != '\0' && (prompt[ind] > 'Z' || prompt[ind] < 'A'))
+		ind++;
+	if (prompt[ind] == '\0')
+	{
+		printf("ERROR:invalid command\n");
+		return ;
+	}
+	while (prompt[ind] != '\0' && prompt[ind] != ' ')
+		contentor[jnd++] = prompt[ind++];
+	contentor[jnd] = '\0';
+	printf("Embarcacao:%s, Pilha:%d, contentor:%s\n", porto->_emb[pos].nome, pilha, contentor);
+	add_contentor(porto, pos, pilha, contentor);
+}
 
 void	create_barco(s_port *porto, int dest, char *prompt)
 {
@@ -694,8 +698,8 @@ int	actual_program(s_port *porto)
 			show(porto, prompt);
 		if (strncmp(prompt, "navigate", 8) == 0)
 			navigate(porto, prompt);
-		// if (strncmp(prompt, "load", 4) == 0)
-		// 	load(porto, prompt);
+		if (strncmp(prompt, "load", 4) == 0)
+			load(porto, prompt);
 	}
 	return (1);
 }
