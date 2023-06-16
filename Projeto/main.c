@@ -515,6 +515,54 @@ int	show(s_port *porto, char *prompt)
 	return (1);
 }
 
+void	contentor_shenanigans(s_port *porto, char *contentor, int n_contentor, int pos, int pilha)
+{
+	s_pilha	_pilha;
+	int	index = 0;
+	int	jndex;
+
+	_pilha.cont = calloc (sizeof(s_cont), porto->_emb[pos].pilha[pilha].contentores + 1);
+	if (!_pilha.cont)
+		return ;
+	while (index < porto->_emb[pos].pilha[pilha].contentores + 1)
+	{
+		_pilha.cont[index].p_id = calloc (sizeof(char), 4);
+		if (!_pilha.cont[index].p_id)
+			return ;
+		index++;
+	}
+//	porto->_emb[pos].pilha[pilha].cont[index]
+	index = 0;
+	while (index < porto->_emb[pos].pilha[pilha].contentores)
+	{
+		jndex = 0;
+		while (jndex < 4)
+		{
+			_pilha.cont[index].p_id[jndex] = porto->_emb[pos].pilha[pilha].cont[index].p_id[jndex];
+			jndex++;
+		}
+		_pilha.cont[index].p_id[jndex] = '\0';
+		_pilha.cont[index].pilha_id = index;
+		_pilha.cont[index].peso = porto->_emb[pos].pilha[pilha].cont[index].peso;
+		index++;
+	}
+	jndex = 0;
+	index = porto->_emb[pos].pilha[pilha].contentores;
+	while (jndex < 4)
+	{
+		_pilha.cont[index].p_id[jndex] = contentor[jndex];
+		jndex++;
+	}
+	_pilha.cont[index].p_id[jndex] = '\0';
+	_pilha.cont[index].pilha_id = pilha;
+	_pilha.cont[index].peso = n_contentor;
+	_pilha.contentores = porto->_emb[pos].pilha[pilha].contentores;
+	_pilha.peso_total = porto->_emb[pos].pilha[pilha].peso_total;
+	// if (porto->_emb[pos].pilha[pilha])
+	// 	free(porto->_emb[pos].pilha[pilha]);
+	porto->_emb[pos].pilha[pilha] = _pilha;
+}
+
 void	add_contentor(s_port *porto, int pos, int pilha, char *brutocontentor)
 {
 	int		jndex = porto->_emb[pos].pilha[pilha].contentores;
@@ -536,23 +584,46 @@ void	add_contentor(s_port *porto, int pos, int pilha, char *brutocontentor)
 		return ;
 	}
 	n_contentor = atoi(buff);
+	if (n_contentor < 500)
+	{
+		printf("ERROR:invalid command\n");
+		return ;
+	}
 	contentor = strndup(brutocontentor, 3);
 	jnd = 0;
-	if (porto->_emb[pos].pilha[pilha].contentores == 0)
+	while ((jnd < porto->_emb[pos].pilha[pilha].contentores) && porto->_emb[pos].pilha[pilha].peso_total != 0)
 	{
-		porto->_emb[pos].pilha[pilha].cont  = calloc(sizeof(s_cont), 1);
-		porto->_emb[pos].pilha[pilha].contentores = 1;
-		porto->_emb[pos].pilha[pilha].cont->pilha_id = pilha;
-		porto->_emb[pos].pilha[pilha].cont->peso = n_contentor;
-		porto->_emb[pos].pilha[pilha].cont->p_id = strdup(contentor);
+		if (strncmp(porto->_emb[pos].pilha[pilha].cont[jnd].p_id, contentor, 4) == 0)
+		{
+			printf("ERROR:invalid command\n");
+			return ;
+		}
+		jnd++;
+	}
+	jnd = 0;
+	if (porto->_emb[pos].pilha[pilha].peso_total == 0)
+	{
+		create_contentor(porto,pos,pilha);
+		while (jnd < 4)
+		{
+			porto->_emb[pos].pilha[pilha].cont[0].p_id[jnd] = contentor[jnd];
+			jnd++;
+		}
+		porto->_emb[pos].pilha[pilha].cont[0].p_id[jnd] = '\0';
+		porto->_emb[pos].pilha[pilha].cont[0].pilha_id = pilha;
+		porto->_emb[pos].pilha[pilha].cont[0].peso = n_contentor;
+		porto->_emb[pos].pilha[pilha].contentores = 0;
+		if (!porto->_emb[pos].pilha[pilha].cont || porto->_emb[pos].pilha[pilha].cont->p_id == NULL)
+		{
+			printf("ERROR:invalid command\n");
+			return ;
+		}
 	}
 	else
-	printf("boatarde\n");
-	printf("OLA%s\n", porto->_emb[pos].pilha[pilha].cont->p_id);
-	printf("sebas\n");
-	printf("CONTENTOR:%s   N:%d\n", porto->_emb[pos].pilha[pilha].cont->p_id , porto->_emb[pos].pilha[pilha].cont->peso);
+		contentor_shenanigans(porto, contentor, n_contentor, pos, pilha);
 	porto->_emb[pos].pilha[pilha].peso_total += n_contentor;
 	porto->_emb[pos].pilha[pilha].contentores += 1;
+	printf("SUCESS: operation concluded\n");
 }
 
 void	load(s_port *porto, char *prompt)
@@ -592,7 +663,6 @@ void	load(s_port *porto, char *prompt)
 	while (prompt[ind] != '\0' && prompt[ind] != ' ')
 		contentor[jnd++] = prompt[ind++];
 	contentor[jnd] = '\0';
-	printf("Embarcacao:%s, Pilha:%d, contentor:%s\n", porto->_emb[pos].nome, pilha, contentor);
 	add_contentor(porto, pos, pilha, contentor);
 }
 
