@@ -422,7 +422,8 @@ int	where_is_it(s_port *porto, char *prompt, int opt, int jnd)
 		}
 		ind++;
 	}
-	printf("ERROR:invalid command\n");
+	if (opt != 100)
+		printf("ERROR:invalid command\n");
 	return (-1);
 }
 
@@ -591,20 +592,80 @@ int	show(s_port *porto, char *prompt)
 // 	add_contentor(porto, pos, pilha, contentor);
 // }
 
-// void	navigate(s_port *porto, char *prompt)
-// {
-// 	int	ind = 8;
+void	create_barco(s_port *porto, int dest, char *prompt)
+{
+	int		ind = 8;
+	char	name[4];
+	int		jnd = 0;
 
-// 	while(prompt[ind] != 'e' && prompt[ind] != '\0')
-// 		ind++;
-// 	if (prompt[ind] == '\0')
-// 	{
-// 		printf("ERROR:invalid command\n");
-// 		return ;
-// 	}
-// 	while ((prompt[ind] >= 'Z' || prompt[ind] <= 'A') && prompt[ind] != '\0')
+	while(prompt[ind] != 'e' && prompt[ind] != '\0')
+		ind++;
+	while((prompt[ind] >= 'Z' || prompt[ind] <= 'A') && prompt[ind] != '\0')
+		ind++;
+	if (prompt[ind] == '\0')
+	{
+		printf("ERROR:invalid command\n");
+		return ;
+	}
+	while (jnd < 4 && prompt[ind] != '\0')
+		name[jnd++] = prompt[ind++];
+	name[4] = '\0';
+	porto->postos[dest] = 1;
+	porto->_emb[dest].nome = strdup(name);
+	printf("SUCCESS: operation concluded\n");
+	porto->_emb[dest].n_porto = dest;
+	jnd = 0;
+	while (jnd < 6)
+	{
+		porto->_emb[dest].pilha[jnd].peso_total = 0;
+		jnd++;
+	}
+}
 
-// }
+void	barcos_handle(s_port *porto, int dest, int pos)
+{
+	porto->_emb[dest] = porto->_emb[pos];
+	porto->_emb[dest].n_porto = dest;
+	porto->postos[pos] = 0;
+	porto->postos[dest] = 1;
+	printf("SUCCESS: operation concluded\n");
+}
+
+void	navigate(s_port *porto, char *prompt)
+{
+	int	ind = 8;
+	int	pos;
+	int	dest;
+
+	while(prompt[ind] != 'e' && prompt[ind] != '\0')
+		ind++;
+	if (prompt[ind] == '\0')
+	{
+		printf("ERROR:invalid command\n");
+		return ;
+	}
+	pos = where_is_it(porto, prompt, 100, ind);
+	ind = 8;
+	while (prompt[ind] != 'd' && prompt[ind] != '\0')
+		ind++;
+	while (prompt[ind] != '\0' && (prompt[ind] > '9' || prompt[ind] < '0'))
+		ind++;
+	if (prompt[ind] == '\0')
+	{
+		printf("ERROR:invalid command\n");
+		return ;
+	}
+	dest = prompt[ind] - '0';
+	if (porto->postos[dest] == 1)
+	{
+		printf("ERROR:invalid command\n");
+		return ;
+	}
+	if (pos != -1)
+		barcos_handle(porto, dest, pos);
+	else
+		create_barco(porto, dest, prompt);
+}
 
 int	actual_program(s_port *porto)
 {
@@ -631,6 +692,8 @@ int	actual_program(s_port *porto)
 			where_is_it(porto, prompt, 1, 6);
 		if (strncmp(prompt, "show", 4) == 0)
 			show(porto, prompt);
+		if (strncmp(prompt, "navigate", 8) == 0)
+			navigate(porto, prompt);
 		// if (strncmp(prompt, "load", 4) == 0)
 		// 	load(porto, prompt);
 	}
