@@ -540,7 +540,7 @@ void	add_contentor(s_port *porto, int pos, int pilha, char *brutocontentor)
 	jnd = 0;
 	if (porto->_emb[pos].pilha[pilha].contentores == 0)
 	{
-	// 	porto->_emb[pos].pilha[pilha].cont  = calloc(sizeof(s_cont), 1);
+		porto->_emb[pos].pilha[pilha].cont  = calloc(sizeof(s_cont), 1);
 		porto->_emb[pos].pilha[pilha].contentores = 1;
 		porto->_emb[pos].pilha[pilha].cont->pilha_id = pilha;
 		porto->_emb[pos].pilha[pilha].cont->peso = n_contentor;
