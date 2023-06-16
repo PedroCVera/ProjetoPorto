@@ -514,18 +514,44 @@ int	show(s_port *porto, char *prompt)
 	int		ind = 4;
 	char	flag;
 	int		_flag = 0;
+	int		flag_ = 0;
+	int		jnd = 0;
 
 	while (prompt[ind] != '\0' && (prompt[ind] > 'z' || prompt[ind] < 'a'))
+	{
+		if ((prompt[ind] <= 'Z' && prompt[ind] >= 'A'))
+		{
+			printf("ERROR:invalid command\n");
+			return (1);
+		}
+		if ((prompt[ind]) != ' ')
+			flag_ = 1;
 		ind++;
-	if (prompt[ind] == '\0')
+	}
+	if (prompt[ind] == '\0' && flag_ == 0)
 		_flag = show_all(porto);
+	if (prompt[ind] == '\0' && flag_ != 0)
+	{
+		printf("ERROR:invalid command\n");
+		return (1);
+	}
 	flag = prompt[ind];
+	jnd = ind;
+	while (prompt[++jnd] != '\0')
+	{
+		if ((prompt[jnd] >= 'a' && prompt[jnd] <= 'z') || (prompt[jnd] >= 'A' && prompt[jnd] <= 'Z'))
+		{
+			printf("ERROR:invalid command\n");
+			return (1);
+		}
+	}
 	if (flag == 'd')
 		_flag = d_show(porto, prompt, ind);
 	if (flag == 'e')
 		_flag = e_show(porto, prompt, ind);
-	if (_flag != 0)
-		printf("\n");
+	_flag++;
+	// if (_flag != 0)
+	// 	printf("\n");
 	return (1);
 }
 
@@ -640,7 +666,7 @@ void	add_contentor(s_port *porto, int pos, int pilha, char *brutocontentor)
 		porto->_emb[pos].pilha[pilha].peso_total += n_contentor;
 		porto->_emb[pos].pilha[pilha].contentores += 1;
 	}
-	printf("SUCESS: operation concluded\n");
+	printf("SUCCESS: operation concluded\n");
 }
 
 void	load(s_port *porto, char *prompt)
@@ -660,8 +686,12 @@ void	load(s_port *porto, char *prompt)
 	while (prompt[ind] != '\0' && prompt[ind] != 'p')
 		ind++;
 	while (prompt[ind] != '\0' && (prompt[ind] > '9' || prompt[ind] < '0'))
+	{
+		if ((prompt[ind] <= 'Z' && prompt[ind] >= 'A'))
+			break ;
 		ind++;
-	if (prompt[ind] == '\0')
+	}
+	if (prompt[ind] == '\0' && !(prompt[ind] <= '9' && prompt[ind] >= '0'))
 	{
 		printf("ERROR:invalid command\n");
 		return ;
