@@ -537,7 +537,7 @@ int	show(s_port *porto, char *prompt)
 	}
 	flag = prompt[ind];
 	jnd = ind;
-	while (prompt[++jnd] != '\0')
+	while (prompt[++jnd] != '\0' && flag != 'e')
 	{
 		if ((prompt[jnd] >= 'a' && prompt[jnd] <= 'z') || (prompt[jnd] >= 'A' && prompt[jnd] <= 'Z'))
 		{
@@ -715,6 +715,11 @@ void	load(s_port *porto, char *prompt)
 	while (prompt[ind] != '\0' && prompt[ind] != ' ')
 		contentor[jnd++] = prompt[ind++];
 	contentor[jnd] = '\0';
+	if (contentor[3] != ':')
+	{
+		printf("ERROR:invalid command\n");
+		return ;
+	}
 	add_contentor(porto, pos, pilha, contentor);
 }
 
