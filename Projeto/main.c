@@ -432,86 +432,100 @@ void	print_menu(void)
 	printf("+---- MENU\n| move        [-g grua] [-d ponto] [-p pilha] [-D ponto] [-P pilha] [-n numero_de_contentores]\n| show        [-d ponto] [-e embarc]\n| where        [embarc]\n| navigate    [-e embarc] [-d ponto]\n| load        [-e embarc] [-p pilha] [-c contentor:peso]\n| weight    [embarc]\n| save        [filename]\n| help\n| quit\n+----\n");
 }
 
-void	imprimir_fila(s_emb emb, int ind)
+int	imprimir_fila(s_emb emb, int ind)
 {
 	int	total = 0;
+	int	_flag = 0;
 
 	printf("		p%d %d", ind, emb.pilha[ind].contentores);
 	while (total < emb.pilha[ind].contentores)
 	{
+		_flag++;
 		printf(" %s:%d", emb.pilha[ind].cont[total].p_id, emb.pilha[ind].cont[total].peso);
 		total++;
 	}
+	return (_flag);
 }
 
-void	imprimir(s_emb emb)
+int	imprimir(s_emb emb)
 {
 	int	ind = 0;
+	int	_flag = 0;
 
 	printf("d%d %s\n", emb.n_porto, emb.nome);
 	while (ind < 6)
 	{
 		if (emb.pilha[ind].peso_total != 0)
 		{
-			imprimir_fila(emb, ind);
+			_flag = imprimir_fila(emb, ind);
 			printf("\n");
 		}
 		ind++;
 	}
+	return(_flag);
 }
 
-void	d_show(s_port *porto, char *prompt, int ind)
+int	d_show(s_port *porto, char *prompt, int ind)
 {
 	int	pos;
+	int	_flag;
 
 	while (prompt[ind] != '\0' && (prompt[ind] > '9' || prompt[ind] < '0'))
 		ind++;
 	pos = prompt[ind] - '0';
 	if (porto->postos[pos])
-		imprimir(porto->_emb[pos]);
+		_flag = imprimir(porto->_emb[pos]);
 	else
 		printf("ERROR:invalid command\n");
+	return (_flag);
 }
 
-void	e_show(s_port *porto, char *prompt, int ind)
+int	e_show(s_port *porto, char *prompt, int ind)
 {
 	int	pos;
+	int	_flag = 0;
 
 	pos = where_is_it(porto, prompt, 0, ind + 1);
 	if (pos == -1)
-		return ;
+		return (0);
 	if (porto->postos[pos])
-		imprimir(porto->_emb[pos]);
+		_flag = imprimir(porto->_emb[pos]);
 	else
 		printf("ERROR:invalid command\n");
+	return (_flag);
 }
 
-void	show_all(s_port *porto)
+int	show_all(s_port *porto)
 {
 	int	ind = 0;
+	int	_flag = 0;
 
 	while (ind < 10)
 	{
 		if (porto->postos[ind] == 1)
-			imprimir(porto->_emb[ind]);
+			_flag = imprimir(porto->_emb[ind]);
 		ind++;
 	}
+	return (_flag);
 }
 
 int	show(s_port *porto, char *prompt)
 {
 	int		ind = 4;
 	char	flag;
+	int		_flag = 0;
 
 	while (prompt[ind] != '\0' && (prompt[ind] > 'z' || prompt[ind] < 'a'))
 		ind++;
 	if (prompt[ind] == '\0')
-		show_all(porto);
+		_flag = show_all(porto);
 	flag = prompt[ind];
 	if (flag == 'd')
-		d_show(porto, prompt, ind);
+		_flag = d_show(porto, prompt, ind);
 	if (flag == 'e')
-		e_show(porto, prompt, ind);
+		_flag = e_show(porto, prompt, ind);
+	if (_flag != 0)
+		printf("\n");
 	return (1);
 }
 
@@ -677,7 +691,7 @@ void	load(s_port *porto, char *prompt)
 void	create_barco(s_port *porto, int dest, char *prompt)
 {
 	int		ind = 8;
-	char	name[4];
+	char	name[5];
 	int		jnd = 0;
 
 	while(prompt[ind] != 'e' && prompt[ind] != '\0')
@@ -828,13 +842,7 @@ int	main(int argc, char *argv[])
 		// print_content(&porto);
 	}
 	else //sem ficheiro
-		starting(&porto);;
-	if (actual_program(&porto) == 1)
-	{
-		// free_all;
-		return (1);
-	}
-	else
-		//free_all(porto);
+		starting(&porto);
+	actual_program(&porto);
 	return (0);
 }
